@@ -53,8 +53,21 @@ if ($validPart) {
 		$sql = "SELECT * FROM parts ORDER BY id;";
 		$stmt = $pdo->prepare( $sql );
 		$stmt->execute();
-		$result = json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
-		print($result);
+		$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		if (empty($result)) {
+			$stmt2 = $pdo->prepare( "INSERT INTO parts (name,description,created) VALUES ('Item 0','Item para ser alterado',?);" );
+			$in = $stmt2->execute( array($data) );
+			if($in > 0){
+				
+				$stmt3 = $pdo->prepare( "SELECT * FROM parts ORDER BY id;" );
+				$stmt3->execute();
+				$result = json_encode($stmt3->fetchAll(PDO::FETCH_ASSOC));
+				print($result);
+			}
+		}
+		else{
+			print(json_encode($result));
+		}
 	}
 
 	if($func === 'loadOne') {
@@ -114,6 +127,20 @@ if ($validPart) {
 			$sql = "UPDATE parts SET name=?, description=?, weight=?, modified=? WHERE id=?;";
 			$stmt = $pdo->prepare( $sql );
 			$result = $stmt->execute( array( $nome, $descricao, $fatorPeso, $data, $id ) );
+			print($result);
+		}
+	}
+
+	if($func === 'delete') {
+		$hasInfo = true;
+		if (empty($id)) {
+			$hasInfo = false;
+			array_push($error, 'Id');
+		}
+		if ($hasInfo) {
+			$sql = "DELETE FROM parts WHERE id=?;";
+			$stmt = $pdo->prepare( $sql );
+			$result = $stmt->execute(array( $id ) );
 			print($result);
 		}
 	}

@@ -38,8 +38,12 @@
 						<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
 							<a class="nav-link" id="" href="./materials.php"> Materiais </a>
 							<a class="nav-link" id="" href="./parts.php"> Partes </a>
-							<span id="" class="dropdown-item">Another action</span>
-							<span id="" class="dropdown-item">Something else here</span>
+							<a class="nav-link" id="" href="./pommelshapes.php"> Forma do Pomo </a>
+							<a class="nav-link" id="" href="./guardshapes.php"> Forma da Guarda </a>
+							<a class="nav-link" id="" href="./bladeshapes.php"> Forma da Lamina </a>
+							<a class="nav-link" id="" href="./bladeclass.php"> Estilo da Lamina </a>
+							<a class="nav-link" id="" href="./crosssection.php"> Vincos da Lamina </a>
+							<a class="nav-link" id="" href="./bladegrip.php"> Punho da Lamina </a>
 						</div>
 					</li>
 

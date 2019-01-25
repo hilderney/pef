@@ -1,12 +1,20 @@
 $(document).ready(function() {
     m = {};
     m.func = 'load';
+    currentPage = 1;
+    lastPage = 1;
+    firstItem = 0;
+    lastItem = 0;
+    itensPerPage = 10;
+    fullTable = {};
     loadMaterials(m);
 
     $('#btn_createMaterial').on('click', function() {
         m.nome = $('#txt_materialName').val();
         m.desc = $('#txt_materialDesc').val();
         m.hard = $('#range_materialDurability').val();
+        m.weight = $('#range_materialWeight').val();
+        m.valor = $('#range_materialValor').val();
         m.func = 'create';
         createNewMaterial(m)
     });
@@ -29,6 +37,8 @@ $(document).ready(function() {
         m.nome = $('#txt_materialName_edit').val();
         m.desc = $('#txt_materialDesc_edit').val();
         m.hard = $('#range_materialDurability_edit').val();
+        m.weight = $('#range_materialWeight_edit').val();
+        m.valor = $('#range_materialValor_edit').val();
         m.func = 'edit';
         createNewMaterial(m);        
     });
@@ -50,9 +60,12 @@ $(document).ready(function() {
                 , 'nome' : m.nome
                 , 'descricao' : m.desc
                 , 'dureza' : m.hard
+                , 'fatorPeso' : m.weight
+                , 'fatorValor' : m.valor
                 , 'func' : m.func
             } //Dados
             , success: function(d) { //Sucesso no AJAX
+                debugger;
                 console.log(d);
                 if (isJson(d) && d != '[]') {
                     m = { func:'load' };
@@ -81,7 +94,7 @@ $(document).ready(function() {
         return false;
     }
 
-    function loadMaterials(m) {
+    function loadMaterials(m,p=null) {
         $.ajax({ //Função AJAX
             url: "app/material.php" //Arquivo php
             , type: "post" //Método de envio
@@ -92,15 +105,23 @@ $(document).ready(function() {
             } //Dados
             , success: function(d) { //Sucesso no AJAX
                 if (isJson(d) && d != '[]') {
-                    json = JSON.parse(d);                   
-                    if (m.func === 'load')
-                        createNewTable( json, $('#table-container') );
+                    json = JSON.parse(d);                
+                    if (m.func === 'load') {
+                        fullTable = json;
+                        p != null ? currentPage = p : '';
+                        createNewTable( fullTable, currentPage, $('#table-container') );
+                    }
                     else if (m.func === 'loadOne') {
+                        debugger;
                         $('#nav-tab-editar').click();
                         $('#txt_materialName_edit').val(json.name);
                         $('#txt_materialDesc_edit').val(json.description);
                         $('#range_materialDurability_edit').val(json.hardness);
+                        $('#range_materialWeight_edit').val(json.weight);
+                        $('#range_materialValor_edit').val(json.value);
                         $('#range_materialDurability_edit').change();
+                        $('#range_materialWeight_edit').change();
+                        $('#range_materialValor_edit').change();
                     }
                     else if (m.func === 'loadItem') {
                         createModal(json, m.field);
@@ -175,49 +196,105 @@ $(document).ready(function() {
         return true;
     }
 
-    function createNewTable(d,t) {
+    function createNewTable(d,p,t) {
         t.html('');
         table = $('<table class="table table-striped"></table>');
-
         thead = $('<thead></thead>');
         tbody = $('<tbody></tbody>');
 
         console.log(Object.keys(d[0]));
 
         var th = Object.keys(d[0]);
-        tr = $('<tr></tr>');
-        thead.append(tr);
+        var tr = $('<tr></tr>');
+
         for(i of th){
-            thead.append($('<th>' + i + '</th>'));
+            tr.append($('<th>' + i + '</th>'));
         }
-        thead.append($('<th> actions </th>'));
+
+        tr.append($('<th> actions </th>'));
+        thead.append(tr);
         table.append(thead);
 
-        for(r of d){
+        currentPage = p;
+        lastPage = Math.ceil(d.length / itensPerPage);
+
+        currPageElem = $('<li id="currPage" class="page-item" data-value="' + p + '"> <a class="page-link" href="#"> ' + p + ' </a> </li>');
+        prevPageElem = $('<li id="prevPage" class="page-item" data-value="' + (p-1) + '"> <a class="page-link" href="#"> <i class="material-icons"> navigate_before </i> </a> </li>');
+        nextPageElem = $('<li id="nextPage" class="page-item" data-value="' + (p+1) + '"> <a class="page-link" href="#"> <i class="material-icons"> navigate_next </i> </a> </li>');
+        
+
+        if (currentPage <= 1) { // Caso de pagina ser <= que a primeira
+            currentPage = 1;
+            prevPageElem.html('<a class="page-link" href="#" tabindex="-1"> <i class="material-icons"> navigate_before </i> </a>');
+            prevPageElem.addClass('disabled');
+            prevPageElem.attr('data-value', '1');
+        }
+        else if (currentPage >= lastPage) { // Caso de pagina ser >= que a ultima
+            currentPage = lastPage;
+            nextPageElem.html('<a class="page-link" href="#" tabindex="-1"> <i class="material-icons"> navigate_next </i> </a>');
+            nextPageElem.addClass('disabled');
+            nextPageElem.attr('data-value', lastPage);
+        }
+        firstItem = ( currentPage - 1 ) * itensPerPage; // primeiro item da pagina
+        lastItem = ( currentPage * itensPerPage) - 1; // ultimo item da pagina
+        lastItem >= (d.length -1) ? lastItem = (d.length -1) : ''; // ulimo item não pode ser maior que d.length
+        
+        for (var r = firstItem; r <= lastItem; r++) {
             tr = $('<tr></tr>');
             for(i of th) {
                 var cont;
-                r[i] === null ? r[i] = '' : '';
-                if (r[i].length > 30) {
-                    cont = r[i].substring(33, 0).trim().concat('...');
-                    tr.append($('<td id="expand-data-row-' + r.id + '-col-' + i + '" class="expandable-on-click" data-value="' + r.id + '" data-func="loadItem" data-field="' + i + '">' + cont + '</td>'));
+                d[r][i] === null ? d[r][i] = 'null' : '';
+                if (d[r][i].length > 30) {
+                    cont = d[r][i].substring(33, 0).trim().concat('...');
+                    tr.append($('<td id="expand-data-row-' + d[r]['id'] + '-col-' + i + '" class="expandable-on-click" data-value="' + d[r]['id'] + '" data-func="loadItem" data-field="' + i + '">' + cont + '</td>'));
                 }
                 else {
-                    cont = r[i];
+                    cont = d[r][i];
                     tr.append($('<td>' + cont + '</td>'));
                 }
             }
-            btnEdit = $('<i class="material-icons" style="padding: 0 2px;"> <button type="button" id="item-edit-' + r.id + '" data-value="' + r.id + '" data-func="edit" class="btn btn-warning"> edit  </button> </i>');
-            btnDelete = $('<i class="material-icons" style="padding: 0 2px;"> <button type="button" id="item-delete-' + r.id + '" data-value="' + r.id + '" data-func="delete" class="btn btn-danger"> delete_forever </button> </i>');
+            btnEdit = $('<i class="material-icons" style="padding: 0 2px;"> <button type="button" id="item-edit-' + d[r]['id'] + '" data-value="' + d[r]['id'] + '" data-func="edit" class="btn btn-warning"> edit  </button> </i>');
+            btnDelete = $('<i class="material-icons" style="padding: 0 2px;"> <button type="button" id="item-delete-' + d[r]['id'] + '" data-value="' + d[r]['id'] + '" data-func="delete" class="btn btn-danger"> delete_forever </button> </i>');
             td = $('<td> </td>');
             td.append(btnEdit);
             td.append(btnDelete);
             tr.append(td);
             tbody.append(tr);
         }
+
         table.append(tbody);
 
-        $('#table-container').append(table);
+        navPag = $('<nav aria-label="Page navigation example"> <ul class="pagination justify-content-end"> </ul> </nav>');
+        navPag.children().append(prevPageElem);
+        navPag.children().append(currPageElem);
+        navPag.children().append(nextPageElem);
+
+        (d.length / itensPerPage) < 1 ? '' : t.append(navPag);
+        t.append(table);
+
+        $('#prevPage').on('click', function(){
+            if (currPage.dataset['value'] === '1') {
+                console.log(currPage.dataset['value'] + ' = ' + p);
+            }
+            else{
+                console.log(currPage.dataset['value'] + ' != 1');
+                currentPage = p - 1;
+                loadMaterials(m, currentPage);
+            }
+        });
+        $('#currPage').on('click', function(){
+            console.log('clicou atual');
+        });
+        $('#nextPage').on('click', function(){
+            if (currPage.dataset['value'] === String(lastPage)) {
+                console.log(currPage.dataset['value'] + ' = ' + String(lastPage));
+            }
+            else {
+                console.log(currPage.dataset['value'] + ' != ' + String(lastPage));
+                currentPage = p + 1;
+                loadMaterials(m, currentPage);
+            }
+        });
     }
 
     function createModal(d, field) {

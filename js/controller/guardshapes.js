@@ -7,36 +7,36 @@ $(document).ready(function() {
     lastItem = 0;
     itensPerPage = 10;
     fullTable = {};
-    loadParts(m);
+    loadGuardShapes(m);
 
-    $('#btn_createPart').on('click', function() {
-        m.nome = $('#txt_partName').val();
-        m.desc = $('#txt_partDesc').val();
-        m.weight = $('#range_partWeight').val();
+    $('#btn_createGuardShape').on('click', function() {
+        m.nome = $('#txt_guardShapeName').val();
+        m.desc = $('#txt_guardShapeDesc').val();
+        m.weight = $('#range_guardShapeWeight').val();
         m.func = 'create';
-        createNewPart(m);
+        createNewGuardShape(m);
     });
 
     $(document).on('click','table tr td button', function(e) {
         if (e.target.dataset['func'] === 'edit') {
             m.id = e.target.dataset['value'];
             m.func = 'loadOne';
-            loadParts(m);
+            loadGuardShapes(m);
         }
         else if (e.target.dataset['func'] === 'delete') {
             m = {};
             m.id = e.target.dataset['value'];
             m.func = 'delete';
-            deletePart(m);
+            deleteGuardShape(m);
         }
     });
 
-    $('#btn_editPart').on('click', function() {
-        m.nome = $('#txt_partName_edit').val();
-        m.desc = $('#txt_partDesc_edit').val();
-        m.weight = $('#range_partWeight_edit').val();
+    $('#btn_editGuardShape').on('click', function() {
+        m.nome = $('#txt_guardShapeName_edit').val();
+        m.desc = $('#txt_guardShapeDesc_edit').val();
+        m.weight = $('#range_guardShapeWeight_edit').val();
         m.func = 'edit';
-        createNewPart(m);        
+        createNewGuardShape(m);        
     });
 
     $(document).on('click','.expandable-on-click', function(e) {
@@ -44,12 +44,12 @@ $(document).ready(function() {
         m.id = e.target.dataset['value'];
         m.func = 'loadItem';
         m.field = e.target.dataset['field'];
-        loadParts(m);
+        loadGuardShapes(m);
     });
 
-    function createNewPart(m) {
+    function createNewGuardShape(m) {
         $.ajax({ //Função AJAX
-            url: "app/part.php" //Arquivo php
+            url: "app/guardshape.php" //Arquivo php
             , type: "post" //Método de envio
             , data: { 
                 'id' : m.id
@@ -62,7 +62,7 @@ $(document).ready(function() {
                 console.log(d);
                 if (isJson(d) && d != '[]') {
                     m = { func:'load' };
-                    loadParts(m);
+                    loadGuardShapes(m);
                     if (JSON.parse(d) > 0) {
                         console.log(JSON.parse(d) + ' linha(s) afetada(s)');
                     }
@@ -85,9 +85,9 @@ $(document).ready(function() {
         return false;
     }
 
-    function loadParts(m,p=null) {
+    function loadGuardShapes(m,p=null) {
         $.ajax({ //Função AJAX
-            url: "app/part.php" //Arquivo php
+            url: "app/guardshape.php" //Arquivo php
             , type: "post" //Método de envio
             , data: {
                 'id' : m.id
@@ -105,10 +105,10 @@ $(document).ready(function() {
                     else if (m.func === 'loadOne') {
                         debugger;
                         $('#nav-tab-editar').click();
-                        $('#txt_partName_edit').val(json.name);
-                        $('#txt_partDesc_edit').val(json.description);
-                        $('#range_partWeight_edit').val(json.weight);
-                        $('#range_partWeight_edit').change();
+                        $('#txt_guardShapeName_edit').val(json.name);
+                        $('#txt_guardShapeDesc_edit').val(json.description);
+                        $('#range_guardShapeWeight_edit').val(json.weight);
+                        $('#range_guardShapeWeight_edit').change();
                     }
                     else if (m.func === 'loadItem') {
                         createModal(json, m.field);
@@ -120,7 +120,7 @@ $(document).ready(function() {
                 else {
                     console.log(d);
                     //sessionStorage.clear();
-                    console.log('Não há dados na Tabela Materiais');
+                    console.log('Não há dados na Tabela guardshape');
                     debugger;
                 }
             }
@@ -133,9 +133,9 @@ $(document).ready(function() {
         return false;
     }
 
-    function deleteParts(m) {
+    function deleteGuardShape(m) {
         $.ajax({ //Função AJAX
-            url: "app/part.php" //Arquivo php
+            url: "app/guardshape.php" //Arquivo php
             , type: "post" //Método de envio
             , data: { 
                 'id' : m.id
@@ -145,7 +145,7 @@ $(document).ready(function() {
                 console.log(d);
                 if (isJson(d) && d != '[]') {
                     m = { func:'load' };
-                    loadParts(m);
+                    loadGuardShapes(m);
                     if (JSON.parse(d) > 0) {
                         console.log(JSON.parse(d) + ' linha(s) afetada(s)');
                     }
@@ -264,7 +264,7 @@ $(document).ready(function() {
             else{
                 console.log(currPage.dataset['value'] + ' != 1');
                 currentPage = p - 1;
-                loadParts(m, currentPage);
+                loadGuardShapes(m, currentPage);
             }
         });
         $('#currPage').on('click', function(){
@@ -277,7 +277,7 @@ $(document).ready(function() {
             else {
                 console.log(currPage.dataset['value'] + ' != ' + String(lastPage));
                 currentPage = p + 1;
-                loadParts(m, currentPage);
+                loadGuardShapes(m, currentPage);
             }
         });
     }

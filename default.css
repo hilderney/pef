@@ -23,6 +23,20 @@
   font-feature-settings: 'liga';
 }
 
+ul.pagination .page-item i {
+  font-size: 16px;  /* Preferred icon size */
+}
+
+footer {
+  position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    width: 100%;
+    background-color:  #f8f9fa!important;
+}
+
 td:last-child {
   word-break: break-word;
   overflow-wrap: break-word;
@@ -30,10 +44,19 @@ td:last-child {
 }
 
 .nav-no-header {
-    width: 0;
-    height: 0;
-    padding: 0;
-    border: none !important;
+  width: 0;
+  height: 0;
+  padding: 0;
+  border: none !important;
+}
+
+table {
+    font-size: 0.8em;
+}
+
+table tr td:first-child,
+table tr th:first-child {
+  display: none;
 }
 
 #table-container{

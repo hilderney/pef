@@ -7,36 +7,36 @@ $(document).ready(function() {
     lastItem = 0;
     itensPerPage = 10;
     fullTable = {};
-    loadParts(m);
+    loadPommelShapes(m);
 
-    $('#btn_createPart').on('click', function() {
-        m.nome = $('#txt_partName').val();
-        m.desc = $('#txt_partDesc').val();
-        m.weight = $('#range_partWeight').val();
+    $('#btn_createPommelShape').on('click', function() {
+        m.nome = $('#txt_pommelShapeName').val();
+        m.desc = $('#txt_pommelShapeDesc').val();
+        m.weight = $('#range_pommelShapeWeight').val();
         m.func = 'create';
-        createNewPart(m);
+        createNewPommelShape(m);
     });
 
     $(document).on('click','table tr td button', function(e) {
         if (e.target.dataset['func'] === 'edit') {
             m.id = e.target.dataset['value'];
             m.func = 'loadOne';
-            loadParts(m);
+            loadPommelShapes(m);
         }
         else if (e.target.dataset['func'] === 'delete') {
             m = {};
             m.id = e.target.dataset['value'];
             m.func = 'delete';
-            deletePart(m);
+            deletePommelShape(m);
         }
     });
 
-    $('#btn_editPart').on('click', function() {
-        m.nome = $('#txt_partName_edit').val();
-        m.desc = $('#txt_partDesc_edit').val();
-        m.weight = $('#range_partWeight_edit').val();
+    $('#btn_editPommelShape').on('click', function() {
+        m.nome = $('#txt_pommelShapeName_edit').val();
+        m.desc = $('#txt_pommelShapeDesc_edit').val();
+        m.weight = $('#range_pommelShapeWeight_edit').val();
         m.func = 'edit';
-        createNewPart(m);        
+        createNewPommelShape(m);        
     });
 
     $(document).on('click','.expandable-on-click', function(e) {
@@ -44,12 +44,12 @@ $(document).ready(function() {
         m.id = e.target.dataset['value'];
         m.func = 'loadItem';
         m.field = e.target.dataset['field'];
-        loadParts(m);
+        loadPommelShapes(m);
     });
 
-    function createNewPart(m) {
+    function createNewPommelShape(m) {
         $.ajax({ //Função AJAX
-            url: "app/part.php" //Arquivo php
+            url: "app/pommelShape.php" //Arquivo php
             , type: "post" //Método de envio
             , data: { 
                 'id' : m.id
@@ -62,7 +62,7 @@ $(document).ready(function() {
                 console.log(d);
                 if (isJson(d) && d != '[]') {
                     m = { func:'load' };
-                    loadParts(m);
+                    loadPommelShapes(m);
                     if (JSON.parse(d) > 0) {
                         console.log(JSON.parse(d) + ' linha(s) afetada(s)');
                     }
@@ -85,9 +85,9 @@ $(document).ready(function() {
         return false;
     }
 
-    function loadParts(m,p=null) {
+    function loadPommelShapes(m,p=null) {
         $.ajax({ //Função AJAX
-            url: "app/part.php" //Arquivo php
+            url: "app/pommelshape.php" //Arquivo php
             , type: "post" //Método de envio
             , data: {
                 'id' : m.id
@@ -103,12 +103,11 @@ $(document).ready(function() {
                         createNewTable( fullTable, currentPage, $('#table-container') );
                     }
                     else if (m.func === 'loadOne') {
-                        debugger;
                         $('#nav-tab-editar').click();
-                        $('#txt_partName_edit').val(json.name);
-                        $('#txt_partDesc_edit').val(json.description);
-                        $('#range_partWeight_edit').val(json.weight);
-                        $('#range_partWeight_edit').change();
+                        $('#txt_pommelShapeName_edit').val(json.name);
+                        $('#txt_pommelShapeDesc_edit').val(json.description);
+                        $('#range_pommelShapeWeight_edit').val(json.weight);
+                        $('#range_pommelShapeWeight_edit').change();
                     }
                     else if (m.func === 'loadItem') {
                         createModal(json, m.field);
@@ -120,7 +119,7 @@ $(document).ready(function() {
                 else {
                     console.log(d);
                     //sessionStorage.clear();
-                    console.log('Não há dados na Tabela Materiais');
+                    console.log('Não há dados na Tabela pommelshapes');
                     debugger;
                 }
             }
@@ -133,9 +132,9 @@ $(document).ready(function() {
         return false;
     }
 
-    function deleteParts(m) {
+    function deletePommelShapes(m) {
         $.ajax({ //Função AJAX
-            url: "app/part.php" //Arquivo php
+            url: "app/pommelShape.php" //Arquivo php
             , type: "post" //Método de envio
             , data: { 
                 'id' : m.id
@@ -145,7 +144,7 @@ $(document).ready(function() {
                 console.log(d);
                 if (isJson(d) && d != '[]') {
                     m = { func:'load' };
-                    loadParts(m);
+                    loadPommelShapes(m);
                     if (JSON.parse(d) > 0) {
                         console.log(JSON.parse(d) + ' linha(s) afetada(s)');
                     }
@@ -264,7 +263,7 @@ $(document).ready(function() {
             else{
                 console.log(currPage.dataset['value'] + ' != 1');
                 currentPage = p - 1;
-                loadParts(m, currentPage);
+                loadPommelShapes(m, currentPage);
             }
         });
         $('#currPage').on('click', function(){
@@ -277,7 +276,7 @@ $(document).ready(function() {
             else {
                 console.log(currPage.dataset['value'] + ' != ' + String(lastPage));
                 currentPage = p + 1;
-                loadParts(m, currentPage);
+                loadPommelShapes(m, currentPage);
             }
         });
     }

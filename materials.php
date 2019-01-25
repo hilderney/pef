@@ -36,6 +36,16 @@
 				<input type="range" min="1" max="100" value="1" class="slider" id="range_materialDurability">
 			</div>
 		</div>
+		<div class="form-row">
+			<div class="form-group col">
+				<label for="range_materialWeight"> Fator de Peso : <span data-display="range_materialWeight">1</span> </label>
+				<input type="range" min="1" max="25" value="1" class="slider" id="range_materialWeight">
+			</div>
+			<div class="form-group col">
+				<label for="range_materialValor"> Fator de Preço : <span data-display="range_materialValor">1</span> </label>
+				<input type="range" min="1" max="25" value="1" class="slider" id="range_materialValor">
+			</div>
+		</div>
 		<div class="form-group">
 			<label for="txt_materialDesc">Descrição</label>
 			<textarea class="form-control" id="txt_materialDesc" rows="3" placeholder="Descrição do Material"></textarea>
@@ -53,6 +63,16 @@
 			<div class="form-group col">
 				<label for="range_materialDurability"> Dureza : <span data-display="range_materialDurability_edit">1</span> </label>
 				<input type="range" min="1" max="50" value="1" class="slider" id="range_materialDurability_edit">
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-group col">
+				<label for="range_materialWeight_edit"> Fator de Peso : <span data-display="range_materialWeight_edit">1</span> </label>
+				<input type="range" min="1" max="25" value="1" class="slider" id="range_materialWeight_edit">
+			</div>
+			<div class="form-group col">
+				<label for="range_materialValor_edit"> Fator de Preço : <span data-display="range_materialValor_edit">1</span> </label>
+				<input type="range" min="1" max="25" value="1" class="slider" id="range_materialValor_edit">
 			</div>
 		</div>
 		<div class="form-group">
